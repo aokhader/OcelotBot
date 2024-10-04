@@ -8,7 +8,7 @@
 # Step 1: Load and preprocess the dataset from Hugging Face and Kaggle
 from datasets import load_dataset
 
-# Load core datasets from Hugging Face
+# Load core datasets
 human_conversation = load_dataset('projjal1/human-conversation-training-data', split='train')
 mental_health = load_dataset('thedevastator/amod-mental-health-counseling-conversations-data', split='train')
 
