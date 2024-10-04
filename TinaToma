@@ -8,12 +8,18 @@
 # Step 1: Load and preprocess the dataset from Hugging Face and Kaggle
 from datasets import load_dataset
 
-# Load datasets from Hugging Face (replace with actual datasets as per your need)
+# Load core datasets from Hugging Face
 human_conversation = load_dataset('projjal1/human-conversation-training-data', split='train')
 mental_health = load_dataset('thedevastator/amod-mental-health-counseling-conversations-data', split='train')
 
-# Combine both datasets
-combined_dataset = human_conversation.concatenate(mental_health)
+# Load supplementary dataset (Chatbot Arena Conversations)
+chatbot_arena = load_dataset('lmsys/chatbot_arena_conversations', split='train')
+
+# Optional: Sample only a portion of the supplementary dataset to avoid overpowering the well-being focus
+chatbot_arena = chatbot_arena.shuffle(seed=42).select(range(1000))  # Taking a random sample of 1000 examples
+
+# Combine core and supplementary datasets (make sure core datasets are prioritized)
+combined_dataset = human_conversation.concatenate(mental_health).concatenate(chatbot_arena)
 
 # Step 2: Fine-tune GPT-2 on the combined dataset
 from transformers import GPT2Tokenizer, GPT2LMHeadModel, Trainer, TrainingArguments
