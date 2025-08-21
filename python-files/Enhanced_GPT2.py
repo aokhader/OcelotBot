@@ -1,8 +1,8 @@
 # Install necessary libraries
-!pip install transformers datasets
-!pip install rasa
-!pip install scikit-learn
-!pip install tensorflow  # For BiLSTM
+# !pip install transformers datasets
+# !pip install rasa
+# !pip install scikit-learn
+# !pip install tensorflow  # For BiLSTM
 
 import torch
 import tensorflow as tf

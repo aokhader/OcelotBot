@@ -1,8 +1,8 @@
 # Use Google Colab
 # Install necessary libraries
-!pip install transformers datasets
-!pip install rasa
-!pip install scikit-learn
+# !pip install transformers datasets
+# !pip install rasa
+# !pip install scikit-learn
 
 # Step 1: Load and preprocess the dataset from Hugging Face and Kaggle
 from datasets import load_dataset

@@ -1,7 +1,7 @@
 #This sample Ocelot bot uses gpt-2 as the base model, and the dailydialog dataset from Hugging Face as training data (https://huggingface.co/datasets/roskoN/dailydialog)
 
 # Install necessary libraries
-!pip install transformers datasets torch
+# !pip install transformers datasets torch
 
 # Import required libraries
 import torch
