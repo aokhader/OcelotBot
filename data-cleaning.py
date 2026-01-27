@@ -30,10 +30,14 @@ def clean_text(x):
     return text.lower()
 
 def prepare_conversations():
-    df = pd.read_csv(os.path.join(DATASET_PATH, "human_conversation.csv"))
-    # ---- Group rows into conversations using "Hi!/Hi./Hi" in human1 ----
+    df = pd.read_csv(os.path.join(DATASET_PATH, "human_conversation.csv"), header=0, names=["Human1", "Human2"])
+    # Group rows into conversations using common greetings
     start_re = re.compile(r"^\s*(hi|hello|hey|good\s+morning|good\s+evening)[!.]?\s*$", re.IGNORECASE)
 
+    df["human1"] = df["Human1"].map(clean_text)
+    df["human2"] = df["Human2"].map(clean_text)
+
+    
 
     return df
 
