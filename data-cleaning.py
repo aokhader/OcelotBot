@@ -36,7 +36,8 @@ def clean_text(x):
     return text.lower()
 
 def prepare_conversations():
-    df = pd.read_csv(os.path.join(DATASET_PATH, "human_conversation.csv"), header=0, names=["Human1", "Human2"])
+    fp = pathlib.Path(DATASET_PATH) / "human_conversation.csv"
+    df = pd.read_csv(fp, delimiter="#", header=0, names=["Human1", "Human2"])
     
     # Group rows into conversations using common greetings
     start_re = re.compile(r"^\s*(hi|hello|hey|good\s+morning|good\s+evening)[!.]?\s*$", re.IGNORECASE)
@@ -58,7 +59,7 @@ def prepare_conversations():
 
         if clean_h1 and clean_h2:
             entry = {
-                "instruction": "Respond as an conversational AI assistant.",
+                "instruction": "Respond as an conversational human.",
                 "context": conversation,
                 "response": clean_h2,
                 "metadata": {"source": "human_conversation", "topic": "general"}
@@ -106,7 +107,7 @@ def prepare_chatbot_arena():
             conversation = item['conversation_b']
 
         history = []
-        for i in range(len(conversation) - 1, 2):
+        for i in range(0, len(conversation) - 1, 2):
             user = conversation[i]
             assistant = conversation[i + 1]
             
@@ -117,7 +118,7 @@ def prepare_chatbot_arena():
             full_context = " | ".join(history + [user_text])
             
             chatbot_unified.append({
-                "instruction": "Respond as an empathetic AI assistant.",
+                "instruction": "Respond as a knowledgeable AI assistant.",
                 "context": full_context,
                 "response": assisstant_text,
                 "metadata": {"source": "lmsys_arena", "topic": "general"}
@@ -135,8 +136,20 @@ def prepare_chatbot_arena():
 
 if __name__ == "__main__":
     mental_health_df = prepare_mh()
+    print(f"Mental Health Dataset prepared with {len(mental_health_df)} entries.")
     conversations_df = prepare_conversations()
+    print(f"Human Conversations Dataset prepared with {len(conversations_df)} entries.")
     chatbot_arena_df = prepare_chatbot_arena()
+    print(f"Chatbot Arena Dataset prepared with {len(chatbot_arena_df)} entries.")
+
+    # Write to JSONL files
+    for df, name in zip([mental_health_df, conversations_df, chatbot_arena_df],
+                        ["mental_health.jsonl", "human_conversations.jsonl", "chatbot_arena.jsonl"]):
+        output_path = JSONL_PATH / name
+        with open(output_path, 'w') as f:
+            for _, row in df.iterrows():
+                json.dump(row.to_dict(), f)
+                f.write('\n')
 
 
 
