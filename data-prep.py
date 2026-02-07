@@ -8,19 +8,6 @@ random.seed(21)
 DATASET_PATH = pathlib.Path(os.getcwd() + "/raw-datasets/")
 JSONL_PATH = pathlib.Path(os.getcwd() + "/jsonl-datasets/")
 
-def create_standard_entry(context, response, source, topic="general"):
-    # Standardizes inputs into a single format.
-
-    return {
-        "instruction": "Respond as an empathetic AI assistant focused on student well-being and academic success.",
-        "context": context.strip(),
-        "response": response.strip(),
-        "metadata": {
-            "source": source,
-            "topic": topic
-        }
-    }
-
 def clean_text(x):
     if pd.isna(x): return ""
 
@@ -33,7 +20,7 @@ def clean_text(x):
     text = text.replace('\n', ' ').replace('\r', ' ').strip()
     text = re.sub(r'\s+', ' ', text)
 
-    return text.lower()
+    return text
 
 def prepare_conversations():
     fp = pathlib.Path(DATASET_PATH) / "human_conversation.csv"
@@ -55,11 +42,15 @@ def prepare_conversations():
         clean_h1 = clean_text(h1)
         clean_h2 = clean_text(h2)
 
-        conversation = " | ".join(current_context + [clean_h1])
+        if clean_h1 == "" or clean_h2 == "":
+            continue  
+
+        # Mark the start of a conversation as context if we have a greeting
+        conversation = " | ".join(current_context + [clean_h1]) if current_context else "[START]"
 
         if clean_h1 and clean_h2:
             entry = {
-                "instruction": "Respond as an conversational human.",
+                "instruction": "Respond empathetically to a student, matching the tone and context of the conversation.",
                 "context": conversation,
                 "response": clean_h2,
                 "metadata": {"source": "human_conversation", "topic": "general"}
@@ -76,13 +67,33 @@ def prepare_conversations():
 
 
 def prepare_mh():
-    df = pd.read_csv(os.path.join(DATASET_PATH, "amod_health.csv"), names=["Context", "Response"]).dropna(subset=['Response'])
+    df = pd.read_csv(
+        os.path.join(DATASET_PATH, "amod_health.csv"), 
+        names=["Context", "Response"],
+        skiprows=1,  # Skip header row
+    ).dropna(subset=['Response'])
+
     mh_unified = []
     for _, row in df.iterrows():
+        context = clean_text(row['Context'])
+        response = clean_text(row['Response'])
+
+        if context == "" or response == "":
+            continue 
+
+        if (
+            len(context.split()) < 3 or  
+            len(response.split()) < 5 or  
+            len(response.split()) > 250 or  
+            len(context.split()) > 250
+        ):
+            # Skip entries that are too short or too long to avoid noise and token bloat
+            continue
+
         mh_unified.append({
-            "instruction": "Respond as an empathetic student counselor.",
-            "context": clean_text(row['Context']),
-            "response": clean_text(row['Response']),
+            "instruction": "Respond empathetically to a student, matching the tone and context of the conversation.",
+            "context": context,
+            "response": response,
             "metadata": {"source": "mental_health", "topic": "well-being"}
         })
 
@@ -103,8 +114,10 @@ def prepare_chatbot_arena():
         model_winner = item['winner']
         if model_winner == "model_a":
             conversation = item['conversation_a']
-        else:
+        elif model_winner == "model_b":
             conversation = item['conversation_b']
+        else:
+            conversation = random.choice([item['conversation_a'], item['conversation_b']])
 
         history = []
         for i in range(0, len(conversation) - 1, 2):
@@ -113,12 +126,15 @@ def prepare_chatbot_arena():
             
             user_text = clean_text(user['content'])
             assisstant_text = clean_text(assistant['content'])
+
+            if user_text == "" or assisstant_text == "":
+                continue 
             
             # Context = History of previous turns + current user input
             full_context = " | ".join(history + [user_text])
             
             chatbot_unified.append({
-                "instruction": "Respond as a knowledgeable AI assistant.",
+                "instruction": "Respond empathetically to a student, matching the tone and context of the conversation.",
                 "context": full_context,
                 "response": assisstant_text,
                 "metadata": {"source": "lmsys_arena", "topic": "general"}
