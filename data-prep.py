@@ -1,12 +1,19 @@
 import pandas as pd
 import numpy as np
-import json, pathlib, re, random, os
+import json, pathlib, re, random, os, jsonlines
 from datasets import load_dataset
+from transformers import pipeline
 
 random.seed(21)
 
 DATASET_PATH = pathlib.Path(os.getcwd() + "/raw-datasets/")
 JSONL_PATH = pathlib.Path(os.getcwd() + "/jsonl-datasets/")
+
+labeler = pipeline(
+    "sentiment-analysis", 
+    model="cardiffnlp/twitter-roberta-base-sentiment-latest"
+)
+
 
 def clean_text(x):
     if pd.isna(x): return ""
@@ -21,6 +28,37 @@ def clean_text(x):
     text = re.sub(r'\s+', ' ', text)
 
     return text
+
+def sentiment_labels(input_file, output_file):
+    labeled_data = []
+    
+    i = 0
+    with jsonlines.open(input_file) as reader:
+        for item in reader:
+            i += 1
+            if i % 200 == 0:
+                print(f"Processed {i} samples from {input_file.name}...")
+
+            # Analyze user context sentiment
+            user_sentiment = labeler(item["context"][:512])[0]
+            
+            # Analyze response sentiment
+            response_sentiment = labeler(item["response"][:512])[0]
+            
+            # Add to metadata
+            item["metadata"]["user_sentiment"] = user_sentiment["label"]
+            item["metadata"]["user_sentiment_score"] = user_sentiment["score"]
+            item["metadata"]["response_sentiment"] = response_sentiment["label"]
+            item["metadata"]["response_sentiment_score"] = response_sentiment["score"]
+            
+            labeled_data.append(item)
+    
+    # Save labeled data
+    with jsonlines.open(output_file, mode='w') as writer:
+        writer.write_all(labeled_data)
+    
+    print(f"Labeled {len(labeled_data)} samples \n")
+    return labeled_data
 
 def prepare_conversations():
     fp = pathlib.Path(DATASET_PATH) / "human_conversation.csv"
@@ -151,14 +189,18 @@ def prepare_chatbot_arena():
 
 
 if __name__ == "__main__":
+    print("Preparing datasets...")
+
     mental_health_df = prepare_mh()
     print(f"Mental Health Dataset prepared with {len(mental_health_df)} entries.")
+
     conversations_df = prepare_conversations()
     print(f"Human Conversations Dataset prepared with {len(conversations_df)} entries.")
+
     chatbot_arena_df = prepare_chatbot_arena()
     print(f"Chatbot Arena Dataset prepared with {len(chatbot_arena_df)} entries.")
 
-    # Write to JSONL files
+    # Write cleaned datset to JSONL files
     for df, name in zip([mental_health_df, conversations_df, chatbot_arena_df],
                         ["mental_health.jsonl", "human_conversations.jsonl", "chatbot_arena.jsonl"]):
         output_path = JSONL_PATH / name
@@ -166,6 +208,13 @@ if __name__ == "__main__":
             for _, row in df.iterrows():
                 json.dump(row.to_dict(), f)
                 f.write('\n')
+
+    # Add sentiment labels to datasets and save labeled versions
+    print("-" * 50)
+    print("Adding sentiment labels to datasets...\n")
+    sentiment_labels(JSONL_PATH / "mental_health.jsonl", JSONL_PATH / "mental_health_labeled.jsonl")
+    sentiment_labels(JSONL_PATH / "human_conversations.jsonl", JSONL_PATH / "human_conversations_labeled.jsonl")
+    sentiment_labels(JSONL_PATH / "chatbot_arena.jsonl", JSONL_PATH / "chatbot_arena_labeled.jsonl")
 
 
 
