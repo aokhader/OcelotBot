@@ -1,3 +1,4 @@
+from collections import defaultdict
 import jsonlines
 import random, os
 import pathlib 
@@ -6,20 +7,33 @@ from sklearn.metrics import classification_report, confusion_matrix
 
 JSONL_PATH = pathlib.Path(os.getcwd() + "/jsonl-datasets/")
 
-def create_validation_sample(input_files, output_file, n_samples=300):
-    all_samples = []
+def create_validation_sample(input_files, output_file, n_samples=300):    
+    samples_by_source = defaultdict(list)
     
     for file_path in input_files:
         with jsonlines.open(file_path) as reader:
-            samples = list(reader)
-            all_samples.extend(samples)
+            for sample in reader:
+                source = sample["metadata"]["source"]
+                samples_by_source[source].append(sample)
     
-    # Stratified sampling by source
-    random.shuffle(all_samples)
-    validation_samples = all_samples[:n_samples]
+    # Sample proportionally from each source
+    validation_samples = []
+    samples_per_source = n_samples // len(samples_by_source)
     
+    for source, samples in samples_by_source.items():
+        random.shuffle(samples)
+        selected = samples[:samples_per_source]
+        validation_samples.extend(selected)
+
+    # If needed, add remaining samples randomly
+    remaining = n_samples - len(validation_samples)
+    if remaining > 0:
+        all_remaining = [s for source_samples in samples_by_source.values() 
+                        for s in source_samples if s not in validation_samples]
+        random.shuffle(all_remaining)
+        validation_samples.extend(all_remaining[:remaining])
+
     # Create CSV for manual labeling
-    import pandas as pd
     df = pd.DataFrame([
         {
             "id": i,
@@ -39,9 +53,6 @@ def create_validation_sample(input_files, output_file, n_samples=300):
     return validation_samples
 
 def evaluate_auto_labels(validation_file):
-    """
-    Compare auto-labels vs manual labels.
-    """
     df = pd.read_csv(validation_file)
     
     # Remove unlabeled rows
@@ -62,7 +73,7 @@ def evaluate_auto_labels(validation_file):
     return accuracy
 
 if __name__ == "__main__":
-    # run once and manually label
+    # Run once and manually label
     print("Creating validation sample for manual labeling...")
     create_validation_sample(
         input_files=[

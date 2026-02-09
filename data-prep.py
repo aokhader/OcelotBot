@@ -3,6 +3,8 @@ import numpy as np
 import json, pathlib, re, random, os, jsonlines
 from datasets import load_dataset
 from transformers import pipeline
+from collections import Counter
+
 
 random.seed(21)
 
@@ -84,7 +86,7 @@ def prepare_conversations():
             continue  
 
         # Mark the start of a conversation as context if we have a greeting
-        conversation = " | ".join(current_context + [clean_h1]) if current_context else "[START]"
+        conversation = " | ".join(current_context + [clean_h1]) if current_context else ("[START] " + clean_h1)
 
         if clean_h1 and clean_h2:
             entry = {
@@ -188,6 +190,91 @@ def prepare_chatbot_arena():
 
     return pd.DataFrame(chatbot_unified)
 
+def generate_dataset_report(labeled_files, output_file="dataset_report.txt"):
+    report = []
+    report.append("=" * 60)
+    report.append("DATASET STATISTICS REPORT")
+    report.append("=" * 60)
+    
+    total_samples = 0
+    all_sentiments = []
+    all_sources = []
+    
+    for file_path in labeled_files:
+        dataset_name = file_path.stem.replace("_labeled", "")
+        report.append(f"\n{'='*60}")
+        report.append(f"Dataset: {dataset_name}")
+        report.append(f"{'='*60}")
+        
+        samples = []
+        with jsonlines.open(file_path) as reader:
+            samples = list(reader)
+        
+        # Basic counts
+        report.append(f"Total samples: {len(samples)}")
+        total_samples += len(samples)
+        
+        # Sentiment distribution
+        sentiments = [s["metadata"]["user_sentiment"] for s in samples]
+        sentiment_counts = Counter(sentiments)
+        report.append(f"\nSentiment Distribution:")
+        for sentiment, count in sentiment_counts.most_common():
+            pct = (count / len(samples)) * 100
+            report.append(f"  {sentiment}: {count} ({pct:.1f}%)")
+        
+        all_sentiments.extend(sentiments)
+        all_sources.extend([s["metadata"]["source"] for s in samples])
+        
+        # Context length stats
+        context_lengths = [len(s["context"].split()) for s in samples]
+        response_lengths = [len(s["response"].split()) for s in samples]
+        
+        report.append(f"\nContext Length (words):")
+        report.append(f"  Mean: {np.mean(context_lengths):.1f}")
+        report.append(f"  Median: {np.median(context_lengths):.1f}")
+        report.append(f"  Max: {np.max(context_lengths)}")
+        
+        report.append(f"\nResponse Length (words):")
+        report.append(f"  Mean: {np.mean(response_lengths):.1f}")
+        report.append(f"  Median: {np.median(response_lengths):.1f}")
+        report.append(f"  Max: {np.max(response_lengths)}")
+        
+        # Confidence scores
+        confidence_scores = [s["metadata"]["user_sentiment_score"] for s in samples]
+        report.append(f"\nSentiment Confidence Scores:")
+        report.append(f"  Mean: {np.mean(confidence_scores):.3f}")
+        report.append(f"  Median: {np.median(confidence_scores):.3f}")
+        report.append(f"  Min: {np.min(confidence_scores):.3f}")
+        low_conf = sum(1 for score in confidence_scores if score < 0.75)
+        report.append(f"  Low confidence (<0.75): {low_conf} ({(low_conf/len(samples))*100:.1f}%)")
+    
+    # Overall statistics
+    report.append(f"\n{'='*60}")
+    report.append("OVERALL STATISTICS")
+    report.append(f"{'='*60}")
+    report.append(f"Total samples across all datasets: {total_samples}")
+    
+    report.append(f"\nOverall Sentiment Distribution:")
+    overall_sentiment_counts = Counter(all_sentiments)
+    for sentiment, count in overall_sentiment_counts.most_common():
+        pct = (count / total_samples) * 100
+        report.append(f"  {sentiment}: {count} ({pct:.1f}%)")
+    
+    report.append(f"\nSource Distribution:")
+    source_counts = Counter(all_sources)
+    for source, count in source_counts.most_common():
+        pct = (count / total_samples) * 100
+        report.append(f"  {source}: {count} ({pct:.1f}%)")
+    
+    # Write to file
+    report_text = "\n".join(report)
+    with open(output_file, 'w') as f:
+        f.write(report_text)
+    
+    print(f"\n✅ Dataset report saved to: {output_file}")
+    print(report_text)
+    
+    return report_text
 
 if __name__ == "__main__":
     print("Preparing datasets...")
@@ -217,5 +304,12 @@ if __name__ == "__main__":
     sentiment_labels(JSONL_PATH / "human_conversations.jsonl", JSONL_PATH / "human_conversations_labeled.jsonl")
     sentiment_labels(JSONL_PATH / "chatbot_arena.jsonl", JSONL_PATH / "chatbot_arena_labeled.jsonl")
 
+    print("-" * 50)
+    print("Generating dataset statistics report...")
+    generate_dataset_report([
+        JSONL_PATH / "mental_health_labeled.jsonl",
+        JSONL_PATH / "human_conversations_labeled.jsonl",
+        JSONL_PATH / "chatbot_arena_labeled.jsonl"
+    ])
 
 
