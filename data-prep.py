@@ -141,6 +141,7 @@ def prepare_mh():
 def prepare_chatbot_arena():
     try:
         ds = load_dataset("lmsys/chatbot_arena_conversations", split='train')
+        ds = ds.filter(lambda x: x['language'] == "English")
         ds = ds.shuffle(seed=21).select(range(3000))
     except Exception as e:
         print(f"Error loading dataset: {e}")
