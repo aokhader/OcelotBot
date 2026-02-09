@@ -23,8 +23,8 @@ def create_validation_sample(input_files, output_file, n_samples=300):
     df = pd.DataFrame([
         {
             "id": i,
-            "context": sample["context"][:200], 
-            "response": sample["response"][:200],
+            "context": sample["context"], 
+            "response": sample["response"],
             "auto_sentiment": sample["metadata"]["user_sentiment"],
             "manual_sentiment": "",  
             "source": sample["metadata"]["source"]
