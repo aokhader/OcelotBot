@@ -1,0 +1,96 @@
+============================================================
+DATASET STATISTICS REPORT
+============================================================
+
+============================================================
+Dataset: mental_health
+============================================================
+Total samples: 2770
+
+Sentiment Distribution:
+  negative: 2170 (78.3%)
+  neutral: 485 (17.5%)
+  positive: 115 (4.2%)
+
+Context Length (words):
+  Mean: 50.7
+  Median: 43.0
+  Max: 224
+
+Response Length (words):
+  Mean: 127.6
+  Median: 121.0
+  Max: 250
+
+Sentiment Confidence Scores:
+  Mean: 0.781
+  Median: 0.819
+  Min: 0.390
+  Low confidence (<0.75): 993 (35.8%)
+
+============================================================
+Dataset: human_conversations
+============================================================
+Total samples: 761
+
+Sentiment Distribution:
+  positive: 497 (65.3%)
+  neutral: 234 (30.7%)
+  negative: 30 (3.9%)
+
+Context Length (words):
+  Mean: 78.6
+  Median: 77.0
+  Max: 324
+
+Response Length (words):
+  Mean: 13.6
+  Median: 11.0
+  Max: 151
+
+Sentiment Confidence Scores:
+  Mean: 0.772
+  Median: 0.800
+  Min: 0.392
+  Low confidence (<0.75): 346 (45.5%)
+
+============================================================
+Dataset: chatbot_arena
+============================================================
+Total samples: 3565
+
+Sentiment Distribution:
+  neutral: 3068 (86.1%)
+  negative: 261 (7.3%)
+  positive: 236 (6.6%)
+
+Context Length (words):
+  Mean: 58.8
+  Median: 16.0
+  Max: 1006
+
+Response Length (words):
+  Mean: 131.5
+  Median: 105.0
+  Max: 735
+
+Sentiment Confidence Scores:
+  Mean: 0.787
+  Median: 0.824
+  Min: 0.412
+  Low confidence (<0.75): 1174 (32.9%)
+
+============================================================
+OVERALL STATISTICS
+============================================================
+Total samples across all datasets: 7096
+
+Overall Sentiment Distribution:
+  neutral: 3787 (53.4%)
+  negative: 2461 (34.7%)
+  positive: 848 (12.0%)
+
+Source Distribution:
+  lmsys_arena: 3565 (50.2%)
+  mental_health: 2770 (39.0%)
+  human_conversation: 761 (10.7%)

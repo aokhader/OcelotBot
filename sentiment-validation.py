@@ -74,17 +74,17 @@ def evaluate_auto_labels(validation_file):
 
 if __name__ == "__main__":
     # Run once and manually label
-    print("Creating validation sample for manual labeling...")
-    create_validation_sample(
-        input_files=[
-            JSONL_PATH / "mental_health_labeled.jsonl",
-            JSONL_PATH / "human_conversations_labeled.jsonl",
-            JSONL_PATH / "chatbot_arena_labeled.jsonl"
-        ],
-        output_file="validation_sentiment.csv",
-        n_samples=300
-    )
+    # print("Creating validation sample for manual labeling...")
+    # create_validation_sample(
+    #     input_files=[
+    #         JSONL_PATH / "mental_health_labeled.jsonl",
+    #         JSONL_PATH / "human_conversations_labeled.jsonl",
+    #         JSONL_PATH / "chatbot_arena_labeled.jsonl"
+    #     ],
+    #     output_file="validation_sentiment.csv",
+    #     n_samples=300
+    # )
 
     # After manual labeling, run evaluation
-    # print("\nEvaluating auto-labels against manual labels...")
-    # evaluate_auto_labels("validation_sentiment.csv")
+    print("Evaluating auto-labels against manual labels...")
+    evaluate_auto_labels("validation_sentiment.csv")
