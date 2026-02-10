@@ -110,7 +110,7 @@ def create_stratified_splits(input_file, output_dir, train_ratio=0.8, val_ratio=
     """
     print("\n" + "-" * 70)
     print("Creating stratified train/val/test splits.")
-    print("="*70)
+    print("-" * 70)
     
     with jsonlines.open(input_file) as reader:
         data = list(reader)
@@ -125,7 +125,7 @@ def create_stratified_splits(input_file, output_dir, train_ratio=0.8, val_ratio=
     print(f"Unique strata: {len(set(stratify_keys))}")
     
     # First split: train vs (val + test)
-    train_data, temp_data, train_keys, temp_keys = train_test_split(
+    train_data, temp_data, _, temp_keys = train_test_split(
         data,
         stratify_keys,
         test_size=(val_ratio + test_ratio),
