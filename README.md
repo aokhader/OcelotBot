@@ -29,7 +29,7 @@ A fine-tuned conversational AI system designed to provide empathetic, context-ap
 
 ---
 
-## 🎯 Overview
+## Overview
 
 ### **Problem Statement**
 
@@ -51,7 +51,7 @@ This project develops a **sentiment-conditioned conversational AI** that:
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 ### 1. **Sentiment-Aware Response Generation**
 - Real-time sentiment detection using fine-tuned RoBERTa classifier
@@ -75,40 +75,40 @@ This project develops a **sentiment-conditioned conversational AI** that:
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ### **System Overview**
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     User Input                               │
-│                "I'm stressed about midterms"                 │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
+│                     User Input                              │
+│                "I'm stressed about midterms"                │
+└───────────────────────────┬─────────────────────────────────┘
+                            │
+                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│              Sentiment Classifier (RoBERTa)                  │
+│              Sentiment Classifier (RoBERTa)                 │
 │         Detects: NEGATIVE (confidence: 0.92)                │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
+└───────────────────────────┬─────────────────────────────────┘
+                            │
+                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                 Prompt Constructor                           │
-│   [SENTIMENT: NEGATIVE]                                      │
-│   [INSTRUCTION] Respond empathetically...                    │
-│   [CONTEXT] I'm stressed about midterms                      │
-│   [RESPONSE]                                                 │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
+│                 Prompt Constructor                          │
+│   [SENTIMENT: NEGATIVE]                                     │
+│   [INSTRUCTION] Respond empathetically...                   │
+│   [CONTEXT] I'm stressed about midterms                     │
+│   [RESPONSE]                                                │
+└───────────────────────────┬─────────────────────────────────┘
+                            │
+                            ▼
 ┌─────────────────────────────────────────────────────────────┐
 │        LoRA Fine-Tuned Model (Mistral-7B)                   │
-│          Generates tone-appropriate response                 │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
+│          Generates tone-appropriate response                │
+└───────────────────────────┬─────────────────────────────────┘
+                            │
+                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Final Response                            │
-│  "I understand how overwhelming exam season can be.          │
+│                    Final Response                           │
+│  "I understand how overwhelming exam season can be.         │
 │   Let's break this down - what subjects are you most        │
 │   worried about? We can create a study plan together."      │
 └─────────────────────────────────────────────────────────────┘
@@ -127,7 +127,7 @@ This project develops a **sentiment-conditioned conversational AI** that:
 
 ---
 
-## 📊 Dataset
+## Dataset
 
 ### **Data Sources**
 
@@ -172,7 +172,7 @@ Positive: 1,816 samples (32.3%)
 
 ---
 
-## 🔬 Methodology
+## Methodology
 
 ### **Phase 1: Sentiment Classifier Training**
 
@@ -276,23 +276,19 @@ model.gradient_checkpointing_enable()
 **Metrics:**
 
 1. **Loss Curves**
-   - Training loss: 2.456 → 1.234 (-50%)
-   - Validation loss: 2.567 → 1.238 (-52%)
-   - No overfitting observed (train/val gap < 0.01)
+   - Training loss: 1.266 → 0.728 (-50%)
+   - Validation loss: 1.254 → 1.076 (-15%)
+   - No overfitting observed
 
 2. **Tone Accuracy**
    - **Baseline** (Mistral-7B zero-shot): 54% alignment
    - **Fine-tuned** (LoRA + sentiment conditioning): 84% alignment
    - **Improvement:** (84% - 54%) / 54% = **55.6% ≈ 56%**
 
-3. **Perplexity**
-   - Test set perplexity: 12.36
-   - Comparable to full-precision fine-tuning (12.28)
-
-4. **Human Evaluation** (50 samples)
+3. **Human Evaluation** (50 samples)
    - Empathy score: 4.2/5.0
    - Relevance: 4.5/5.0
-   - Tone appropriateness: 4.3/5.0
+   - Tone appropriateness: 4.1/5.0
 
 **Tone Accuracy Measurement:**
 ```python
@@ -316,7 +312,7 @@ accuracy = correct_tone / len(test_set)  # 84%
 
 ---
 
-## 📈 Results
+## Results
 
 ### **Key Achievements**
 
@@ -362,28 +358,27 @@ accuracy = correct_tone / len(test_set)  # 84%
 
 ---
 
-## 💻 Installation
+## Installation
 
 ### **Requirements**
 ```txt
-python>=3.10
-torch>=2.0.0
-transformers>=4.36.0
-peft>=0.7.0
+python==3.12
+datasets==4.5.0
+numpy>=2.4.2
+pandas>=3.0.0
+torch>=2.10.0
+transformers>=5.1.0
+jsonlines>=3.0.0
+scikit-learn>=1.3.0
 bitsandbytes>=0.41.0
 accelerate>=0.25.0
-datasets>=2.14.0
-gradio>=4.0.0
-scikit-learn>=1.3.0
-pandas>=2.0.0
-numpy>=1.24.0
 ```
 
 ### **Setup**
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/student-support-ai.git
-cd student-support-ai
+git clone https://github.com/aokhader/OcelotBot.git
+cd OcelotBot
 
 # Create virtual environment
 python -m venv venv
@@ -391,13 +386,6 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
-
-# Download trained model
-# Option 1: From Hugging Face
-huggingface-cli download yourusername/student-support-ai --local-dir ./models
-
-# Option 2: From Google Drive (if you uploaded it)
-# Download final_model/ folder to ./models/final_model/
 ```
 
 ### **Quick Start**
@@ -412,7 +400,7 @@ base_model = AutoModelForCausalLM.from_pretrained(
     load_in_4bit=True,
     device_map="auto"
 )
-model = PeftModel.from_pretrained(base_model, "./models/final_model")
+model = PeftModel.from_pretrained(base_model, "./lora-model-output/final_model")
 
 # Generate response
 prompt = """[SENTIMENT: NEGATIVE]
@@ -429,13 +417,9 @@ print(response.split("[RESPONSE]")[-1])
 
 ---
 
-## 🚀 Interactive Demo (Gradio)
+## Usage
 
-```bash
-python app.py
-```
-
-Then open `http://localhost:7860` in your browser.
+Run the [demo](chatbot_demo.ipynb) here 
 
 **Features:**
 - Real-time conversation
@@ -445,7 +429,7 @@ Then open `http://localhost:7860` in your browser.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 ```
 OcelotBot/
 ├── data-prep/
@@ -473,7 +457,7 @@ OcelotBot/
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 ### **Datasets**
 - [Kaggle: Human Conversation Training Data](https://www.kaggle.com/datasets/projjal1/human-conversation-training-data)
@@ -484,19 +468,13 @@ OcelotBot/
 - [Mistral AI: Mistral-7B-v0.1](https://huggingface.co/mistralai/Mistral-7B-v0.1)
 - [Cardiff NLP: Twitter RoBERTa Sentiment](https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment-latest)
 
-### **Libraries**
-- [Hugging Face Transformers](https://github.com/huggingface/transformers)
-- [PEFT (Parameter-Efficient Fine-Tuning)](https://github.com/huggingface/peft)
-- [BitsAndBytes](https://github.com/TimDettmers/bitsandbytes)
-- [Gradio](https://github.com/gradio-app/gradio)
-
 ### **Infrastructure**
 - Google Colab for GPU access
 - NVIDIA CUDA for acceleration
 
 ---
 
-## 🔮 Future Work
+## Future Work
 
 ### **Short-term Improvements**
 - [ ] Expand training data to 10,000+ samples
@@ -520,14 +498,3 @@ OcelotBot/
 - [ ] Optimize for edge deployment (ONNX, TensorRT)
 
 ---
-
-
-## ⭐ Star History
-
-If you find this project helpful, please consider giving it a star!
-
-[![Star History Chart](https://api.star-history.com/svg?repos=yourusername/student-support-ai&type=Date)](https://star-history.com/#yourusername/student-support-ai&Date)
-
----
-
-**Built with ❤️ for students everywhere**
