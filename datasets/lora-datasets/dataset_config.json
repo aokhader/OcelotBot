@@ -1,0 +1,18 @@
+{
+  "max_length": 640,
+  "train_samples": 5676,
+  "val_samples": 709,
+  "test_samples": 710,
+  "total_samples": 7095,
+  "base_model": "mistralai/Mistral-7B-v0.1",
+  "sentiment_labels": [
+    "NEGATIVE",
+    "NEUTRAL",
+    "POSITIVE"
+  ],
+  "sources": [
+    "human_conversation",
+    "lmsys_arena",
+    "mental_health"
+  ]
+}

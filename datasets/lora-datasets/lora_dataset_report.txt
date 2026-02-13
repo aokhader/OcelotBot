@@ -1,0 +1,66 @@
+======================================================================
+LoRA TRAINING DATASET REPORT
+======================================================================
+Generated: 2026-02-10 04:38:09
+
+======================================================================
+TRAIN SET
+======================================================================
+Total samples: 5,676
+
+Sentiment Distribution:
+  NEGATIVE    1,969 ( 34.7%)
+  NEUTRAL     3,028 ( 53.3%)
+  POSITIVE      679 ( 12.0%)
+
+Source Distribution:
+  human_conversation           609 ( 10.7%)
+  lmsys_arena                2,852 ( 50.2%)
+  mental_health              2,215 ( 39.0%)
+
+Topic Distribution:
+  general          3,461 ( 61.0%)
+  well-being       2,215 ( 39.0%)
+
+======================================================================
+VALIDATION SET
+======================================================================
+Total samples: 709
+
+Sentiment Distribution:
+  NEGATIVE      246 ( 34.7%)
+  NEUTRAL       378 ( 53.3%)
+  POSITIVE       85 ( 12.0%)
+
+Source Distribution:
+  human_conversation            75 ( 10.6%)
+  lmsys_arena                  357 ( 50.4%)
+  mental_health                277 ( 39.1%)
+
+Topic Distribution:
+  general            432 ( 60.9%)
+  well-being         277 ( 39.1%)
+
+======================================================================
+TEST SET
+======================================================================
+Total samples: 710
+
+Sentiment Distribution:
+  NEGATIVE      246 ( 34.6%)
+  NEUTRAL       380 ( 53.5%)
+  POSITIVE       84 ( 11.8%)
+
+Source Distribution:
+  human_conversation            77 ( 10.8%)
+  lmsys_arena                  356 ( 50.1%)
+  mental_health                277 ( 39.0%)
+
+Topic Distribution:
+  general            433 ( 61.0%)
+  well-being         277 ( 39.0%)
+
+======================================================================
+OVERALL SUMMARY
+======================================================================
+Total samples across all splits: 7,095
