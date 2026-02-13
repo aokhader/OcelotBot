@@ -12,8 +12,8 @@ import json
 
 random.seed(42)
 
-JSONL_PATH = Path(os.getcwd() + "/jsonl-datasets/")
-LORA_PATH = Path(os.getcwd() + "/lora-datasets/")
+JSONL_PATH = Path(os.getcwd() + "/datasets/jsonl-datasets/")
+LORA_PATH = Path(os.getcwd() + "/datasets/lora-datasets/")
 
 
 def format_for_lora_training(input_files, output_file):

@@ -31,11 +31,11 @@ if torch.cuda.is_available():
         x = torch.randn(1000, 1000).cuda()
         y = torch.randn(1000, 1000).cuda()
         z = torch.matmul(x, y)
-        print("   ✅ CUDA tensor operations working")
+        print("    CUDA tensor operations working")
     except Exception as e:
-        print(f"   ❌ CUDA test failed: {e}")
+        print(f"    CUDA test failed: {e}")
 else:
-    print("\n❌ CUDA is NOT available")
+    print("\n CUDA is NOT available")
     print("\nPossible reasons:")
     print("1. No NVIDIA GPU installed")
     print("2. NVIDIA drivers not installed")
@@ -47,14 +47,14 @@ print("\n[4] NVIDIA Driver Check:")
 try:
     result = subprocess.run(['nvidia-smi'], capture_output=True, text=True)
     if result.returncode == 0:
-        print("   ✅ NVIDIA driver installed")
+        print("NVIDIA driver installed")
         print("\nGPU Information from nvidia-smi:")
         print("-" * 70)
         print(result.stdout)
     else:
-        print("   ❌ nvidia-smi command failed")
+        print("   nvidia-smi command failed")
 except FileNotFoundError:
-    print("   ❌ nvidia-smi not found (driver not installed)")
+    print("   nvidia-smi not found (driver not installed)")
 
 # Recommendations
 print("\n" + "="*70)
@@ -62,7 +62,7 @@ print("RECOMMENDATIONS")
 print("="*70)
 
 if not torch.cuda.is_available():
-    print("\n⚠️  CUDA is not available. To enable GPU training:")
+    print("\nCUDA is not available. To enable GPU training:")
     print("\n1. Check if you have an NVIDIA GPU:")
     print("   - Run: lspci | grep -i nvidia")
     print("\n2. Install NVIDIA drivers:")
@@ -76,24 +76,24 @@ else:
     gpu_name = torch.cuda.get_device_name(0)
     memory_gb = torch.cuda.get_device_properties(0).total_memory / 1e9
     
-    print("\n✅ CUDA is available and working!")
+    print("\n CUDA is available and working!")
     print(f"\nYour GPU: {gpu_name}")
     print(f"Memory: {memory_gb:.2f} GB")
     
     # Memory recommendations
     if memory_gb < 6:
-        print("\n⚠️  WARNING: Your GPU has limited memory (<6GB)")
+        print("\nWARNING: Your GPU has limited memory (<6GB)")
         print("   Recommendations:")
         print("   - Reduce batch size to 1 or 2")
         print("   - Enable gradient checkpointing")
         print("   - Consider 4-bit quantization")
         print("   - Consider using cloud services like Google Colab for training")
     elif memory_gb < 12:
-        print("\n✅ Your GPU should handle training with some adjustments")
+        print("\nYour GPU should handle training with some adjustments")
         print("   Recommendations:")
         print("   - Use batch size 2-4")
         print("   - Enable gradient checkpointing if needed")
         print("   - Consider using cloud services like Google Colab for training")
     else:
-        print("\n✅ Your GPU has plenty of memory for training!")
+        print("\nYour GPU has plenty of memory for training!")
         print("   You can use the default settings")

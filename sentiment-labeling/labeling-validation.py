@@ -5,7 +5,7 @@ import pathlib
 import pandas as pd
 from sklearn.metrics import classification_report, confusion_matrix
 
-JSONL_PATH = pathlib.Path(os.getcwd() + "/jsonl-datasets/")
+JSONL_PATH = pathlib.Path(os.getcwd().replace("sentiment-labeling", "") + "jsonl-datasets/")
 
 def create_validation_sample(input_files, output_file, n_samples=300):    
     samples_by_source = defaultdict(list)

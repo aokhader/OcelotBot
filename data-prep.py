@@ -8,8 +8,8 @@ from collections import Counter
 
 random.seed(21)
 
-DATASET_PATH = pathlib.Path(os.getcwd() + "/raw-datasets/")
-JSONL_PATH = pathlib.Path(os.getcwd() + "/jsonl-datasets/")
+DATASET_PATH = pathlib.Path(os.getcwd() + "/datasets/raw-datasets/")
+JSONL_PATH = pathlib.Path(os.getcwd() + "/datasets/jsonl-datasets/")
 
 labeler = pipeline(
     "sentiment-analysis", 
